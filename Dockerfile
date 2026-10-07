@@ -1,41 +1,34 @@
-# Easy2Excel-Clear
-# Production Dockerfile
+# Easy2Excel-Clear - Free SnapDeploy Dockerfile
 
 # =========================
-# Build Frontend
+# Build Stage
 # =========================
-FROM node:20-slim AS frontend-build
+FROM node:20-slim AS build
 
-WORKDIR /app/frontend
+WORKDIR /app
 
-COPY frontend/package*.json ./
-RUN npm install
+# Frontend dependencies
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
 
-COPY frontend/ ./
+# Backend dependencies
+COPY backend/package*.json ./backend/
+RUN cd backend && npm install
 
-# Make frontend use same-origin API in production
-RUN sed -i "s|http://localhost:5000||g" src/services/api.ts
+# Copy source
+COPY frontend/ ./frontend/
+COPY backend/ ./backend/
 
-RUN npm run build
+# Production frontend API URL
+RUN sed -i "s|http://localhost:5000||g" frontend/src/services/api.ts
 
-
-# =========================
-# Build Backend
-# =========================
-FROM node:20-slim AS backend-build
-
-WORKDIR /app/backend
-
-COPY backend/package*.json ./
-RUN npm install
-
-COPY backend/ ./
-
-RUN npm run build
+# Build frontend + backend
+RUN cd frontend && npm run build
+RUN cd backend && npm run build
 
 
 # =========================
-# Production Container
+# Production Stage
 # =========================
 FROM node:20-slim
 
@@ -44,11 +37,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=5000
 
-COPY --from=backend-build /app/backend/package*.json ./backend/
-COPY --from=backend-build /app/backend/node_modules ./backend/node_modules
-COPY --from=backend-build /app/backend/dist ./backend/dist
-
-COPY --from=frontend-build /app/frontend/dist ./frontend/dist
+COPY --from=build /app/backend/package*.json ./backend/
+COPY --from=build /app/backend/node_modules ./backend/node_modules
+COPY --from=build /app/backend/dist ./backend/dist
+COPY --from=build /app/frontend/dist ./frontend/dist
 
 EXPOSE 5000
 
