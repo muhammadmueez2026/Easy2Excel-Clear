@@ -1,0 +1,35 @@
+{
+  "name": "easy-to-excel-clear-backend",
+  "version": "0.1.0",
+  "description": "Backend API for Easy to Excel Clear - Document to Excel conversion",
+  "main": "dist/app.js",
+  "type": "module",
+  "scripts": {
+    "start": "node dist/app.js",
+    "dev": "nodemon --exec node --loader ts-node/esm src/app.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["document", "excel", "extraction", "ai"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.91.1",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1",
+    "pdfjs-dist": "^3.11.174",
+    "tesseract.js": "^5.0.4",
+    "axios": "^1.6.2",
+    "uuid": "^9.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "typescript": "^5.3.3",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "@types/uuid": "^9.0.7",
+    "ts-node": "^10.9.2"
+  }
+}
